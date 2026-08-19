@@ -7,8 +7,17 @@ public class Menu {
 
         Scanner scanner = new Scanner(System.in);
 
-        int opcao;
-        String tipoRepresentacao = "";
+        System.out.print("Digite o nome do arquivo: ");
+        String nomeArquivo = scanner.next();
+
+        File arquivo = new File("arquivo/" + nomeArquivo);
+
+        if (!arquivo.exists()) {
+            System.out.println("Arquivo não encontrado.");
+            return;
+        }
+
+        System.out.println("Arquivo encontrado!");
 
         System.out.println("==============================");
         System.out.println("      REPRESENTAÇÃO DE GRAFOS");
@@ -20,20 +29,20 @@ public class Menu {
         System.out.println("==============================");
 
         System.out.print("Escolha uma opção: ");
-        opcao = scanner.nextInt();
+        int opcao = scanner.nextInt();
 
         switch (opcao) {
 
             case 1:
-                tipoRepresentacao = "MA";
+                new MatrizA(arquivo);
                 break;
 
             case 2:
-                tipoRepresentacao = "MI";
+                new MatrizI(arquivo);
                 break;
 
             case 3:
-                tipoRepresentacao = "LA";
+                new ListaA(arquivo);
                 break;
 
             case 0:
@@ -43,20 +52,6 @@ public class Menu {
             default:
                 System.out.println("Opção inválida.");
                 return;
-        }
-
-        System.out.print("Digite o nome do arquivo: ");
-        String nomeArquivo = scanner.next();
-
-        File arquivo = new File("arquivo/"+nomeArquivo);
-
-        if (arquivo.exists()) {
-            System.out.println("Arquivo encontrado!");
-            System.out.println("Representação escolhida: " + tipoRepresentacao);
-            System.out.println("Arquivo: " + nomeArquivo);
-            MatrizA matrizA = new MatrizA(arquivo, tipoRepresentacao);
-        } else {
-            System.out.println("Arquivo não encontrado.");
         }
     }
 }
