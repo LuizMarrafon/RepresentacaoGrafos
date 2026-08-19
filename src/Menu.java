@@ -54,7 +54,7 @@ public class Menu {
             System.out.println("Arquivo encontrado!");
             System.out.println("Representação escolhida: " + tipoRepresentacao);
             System.out.println("Arquivo: " + nomeArquivo);
-            MatrizA matrizA = new MatrizA(arquivo);
+            MatrizA matrizA = new MatrizA(arquivo, tipoRepresentacao);
         } else {
             System.out.println("Arquivo não encontrado.");
         }
