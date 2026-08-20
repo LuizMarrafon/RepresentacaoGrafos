@@ -7,51 +7,67 @@ public class Menu {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o nome do arquivo: ");
-        String nomeArquivo = scanner.next();
+        boolean programaAtivo = true;
 
-        File arquivo = new File("arquivo/" + nomeArquivo);
+        while (programaAtivo) {
+            System.out.print("Digite o nome do arquivo (Enter para sair): ");
+            String nomeArquivo = scanner.nextLine().trim();
 
-        if (!arquivo.exists()) {
-            System.out.println("Arquivo não encontrado.");
-            return;
-        }
-
-        System.out.println("Arquivo encontrado!");
-
-        System.out.println("==============================");
-        System.out.println("      REPRESENTAÇÃO DE GRAFOS");
-        System.out.println("==============================");
-        System.out.println("1 - Matriz de Adjacência (MA)");
-        System.out.println("2 - Matriz de Incidência (MI)");
-        System.out.println("3 - Lista de Adjacência (LA)");
-        System.out.println("0 - Sair");
-        System.out.println("==============================");
-
-        System.out.print("Escolha uma opção: ");
-        int opcao = scanner.nextInt();
-
-        switch (opcao) {
-
-            case 1:
-                new MatrizA(arquivo);
-                break;
-
-            case 2:
-                new MatrizI(arquivo);
-                break;
-
-            case 3:
-                new ListaA(arquivo);
-                break;
-
-            case 0:
+            if (nomeArquivo.isEmpty()) {
                 System.out.println("Programa encerrado.");
-                return;
+                programaAtivo = false;
+            } else {
+                File arquivo = new File("arquivo/" + nomeArquivo);
 
-            default:
-                System.out.println("Opção inválida.");
-                return;
+                if (!arquivo.exists()) {
+                    System.out.println("Arquivo não encontrado.");
+                } else {
+                    System.out.println("Arquivo encontrado!");
+
+                    System.out.println("==============================");
+                    System.out.println("      REPRESENTAÇÃO DE GRAFOS");
+                    System.out.println("==============================");
+                    System.out.println("1 - Matriz de Adjacência (MA)");
+                    System.out.println("2 - Matriz de Incidência (MI)");
+                    System.out.println("3 - Lista de Adjacência (LA)");
+                    System.out.println("0 - Sair");
+                    System.out.println("==============================");
+
+                    System.out.print("Escolha uma opção: ");
+                    String entrada = scanner.nextLine().trim();
+                    int opcao;
+
+                    try {
+                        opcao = Integer.parseInt(entrada);
+                    } catch (NumberFormatException e) {
+                        opcao = -1;
+                    }
+
+                    switch (opcao) {
+
+                        case 1:
+                            new MatrizA(arquivo);
+                            break;
+
+                        case 2:
+                            new MatrizI(arquivo);
+                            break;
+
+                        case 3:
+                            new ListaA(arquivo);
+                            break;
+
+                        case 0:
+                            System.out.println("Programa encerrado.");
+                            programaAtivo = false;
+                            break;
+
+                        default:
+                            System.out.println("Opção inválida.");
+                            break;
+                    }
+                }
+            }
         }
     }
 }

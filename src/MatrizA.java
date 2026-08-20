@@ -83,35 +83,31 @@ public class MatrizA {
     public void grafoRegular(boolean orientado) {
         boolean flag = true;
         if (!orientado) {
-            // GRAFO NÃO ORIENTADO
             int grauReferencia = 0;
-            // grau do primeiro vértice
             for (int j = 0; j < matriz.length; j++) {
                 if (matriz[0][j] != 0)
                     grauReferencia++;
             }
-            // calcula e compara o grau dos outros vértices
+            System.out.println(rotulo[0] + " - Grau: " + grauReferencia);
             for (int i = 1; i < matriz.length; i++) {
                 int grauAtual = 0;
                 for (int j = 0; j < matriz.length; j++) {
                     if (matriz[i][j] != 0)
                         grauAtual++;
                 }
+                System.out.println(rotulo[i] + " - Grau: " + grauAtual);
                 if (grauAtual != grauReferencia)
                     flag = false;
             }
         } else {
-            // GRAFO ORIENTADO
             int emissaoReferencia = 0;
             int recepcaoReferencia = 0;
-            // emissão e recepção do primeiro vértice
             for (int j = 0; j < matriz.length; j++) {
                 if (matriz[0][j] != 0)
                     emissaoReferencia++;
                 if (matriz[j][0] != 0)
                     recepcaoReferencia++;
             }
-            // calcula os graus de todos os vértices
             for (int i = 0; i < matriz.length; i++) {
                 int emissao = 0;
                 int recepcao = 0;
@@ -121,10 +117,9 @@ public class MatrizA {
                     if (matriz[j][i] != 0)
                         recepcao++;
                 }
-                System.out.println(rotulo[i] +" - Emissão: " + emissao +" | Recepção: " + recepcao);
-                if (emissao != emissaoReferencia ||recepcao != recepcaoReferencia) {
+                System.out.println(rotulo[i] + " - Emissão: " + emissao + " | Recepção: " + recepcao);
+                if (emissao != emissaoReferencia || recepcao != recepcaoReferencia)
                     flag = false;
-                }
             }
         }
         if (flag)

@@ -10,6 +10,7 @@ public class ListaA {
         this.arquivo = arquivo;
         vertices = new ArrayList<>();
         leArquivo(this.arquivo);
+        exibirLista();
 
         boolean orientado = verificaOrientacao();
 
@@ -22,7 +23,20 @@ public class ListaA {
         grafoRegular(orientado);
         grafoCompleto(orientado);
     }
-
+    public void exibirLista() {
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertice v = vertices.get(i);
+            System.out.print(v.getRotulo());
+            Aresta a = v.getInicio();
+            while (a != null) {
+                System.out.print(" -> " + a.getDestino());
+                if (a.getPeso() != null)
+                    System.out.print("," + a.getPeso());
+                a = a.getProx();
+            }
+            System.out.println();
+        }
+    }
     public void leArquivo(File arq) throws Exception {
         Scanner leitor = new Scanner(arq);
         while (leitor.hasNextLine()) {
@@ -122,10 +136,11 @@ public class ListaA {
         if (!orientado) {
             int grauReferencia = 0;
             Aresta a = vertices.get(0).getInicio();
-            while(a != null) {
+            while (a != null) {
                 grauReferencia++;
                 a = a.getProx();
             }
+            System.out.println(vertices.get(0).getRotulo() + " - Grau: " + grauReferencia);
             for (int i = 1; i < vertices.size(); i++) {
                 int grauAtual = 0;
                 a = vertices.get(i).getInicio();
@@ -133,33 +148,34 @@ public class ListaA {
                     grauAtual++;
                     a = a.getProx();
                 }
+                System.out.println(vertices.get(i).getRotulo() + " - Grau: " + grauAtual);
                 if (grauAtual != grauReferencia)
                     flag = false;
             }
         }
-        else{
+        else {
             int emissaoReferencia = 0;
             int recepcaoReferencia = 0;
             Aresta a = vertices.get(0).getInicio();
-            while(a != null) {
+            while (a != null) {
                 emissaoReferencia++;
                 a = a.getProx();
             }
             String primeiroRotulo = vertices.get(0).getRotulo();
-            for(int i = 0; i < vertices.size(); i++) {
+            for (int i = 0; i < vertices.size(); i++) {
                 Aresta aux = vertices.get(i).getInicio();
-                while(aux != null){
+                while (aux != null) {
                     if (aux.getDestino().equalsIgnoreCase(primeiroRotulo))
                         recepcaoReferencia++;
                     aux = aux.getProx();
                 }
             }
-            for(int i = 0; i < vertices.size(); i++) {
+            for (int i = 0; i < vertices.size(); i++) {
                 Vertice v = vertices.get(i);
                 int emissao = 0;
                 int recepcao = 0;
                 a = v.getInicio();
-                while(a != null){
+                while (a != null) {
                     emissao++;
                     a = a.getProx();
                 }
@@ -172,15 +188,16 @@ public class ListaA {
                     }
                 }
                 System.out.println(v.getRotulo() + " - Emissão: " + emissao + " | Recepção: " + recepcao);
-                if(emissao != emissaoReferencia || recepcao != recepcaoReferencia)
+                if (emissao != emissaoReferencia || recepcao != recepcaoReferencia)
                     flag = false;
             }
         }
-        if(flag)
+        if (flag)
             System.out.println("Grafo é regular");
         else
             System.out.println("Grafo não é regular");
     }
+
     public void grafoCompleto(boolean orientado) {
         boolean completo = true;
         if(!ehSimples())
