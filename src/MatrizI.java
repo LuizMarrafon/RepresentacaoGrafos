@@ -8,6 +8,8 @@ public class MatrizI {
     private String[] rotulo;
     private String[] rotuloAresta;
     private File arquivo;
+    private boolean simplesVerificado = false;
+    private boolean grafoSimples = false;
 
     public MatrizI(File arquivo) throws Exception {
         this.arquivo = arquivo;
@@ -21,10 +23,7 @@ public class MatrizI {
         else
             System.out.println("Grafo não orientado");
 
-        if (orientado) {
-            grafoSimplesMI();
-        }
-
+        grafoSimplesMI();
         grafoRegularMI();
         grafoCompletoMI();
     }
@@ -92,104 +91,246 @@ public class MatrizI {
         return false;
     }
 
-    public void grafoSimplesMI() { // Método que verifica se o grafo da matriz de incidência é simples.
-        ArrayList<String> arestas = new ArrayList<String>(); // Lista usada para guardar as arestas que já foram encontradas.
-        int quantidadeArestas = matriz[0].length; // A quantidade de colunas representa a quantidade de arestas.
-
-        for (int coluna = 0; coluna < quantidadeArestas; coluna++) { // Percorre cada coluna da matriz, ou seja, cada aresta.
-            int origem = -1; // Guarda a posição do vértice de origem da aresta.
-            int destino = -1; // Guarda a posição do vértice de destino da aresta.
-
-            for (int linha = 0; linha < matriz.length; linha++) { // Percorre cada linha da coluna atual, ou seja, cada vértice.
-                if (matriz[linha][coluna] < 0) { // Se encontrou valor negativo, esse vértice é a origem da aresta.
-                    origem = linha; // Salva o índice da linha como origem.
-                }
-
-                if (matriz[linha][coluna] > 0) { // Se encontrou valor positivo, esse vértice é o destino da aresta.
-                    destino = linha; // Salva o índice da linha como destino.
-                }
-            }
-
-            String aresta = origem + "->" + destino; // Monta a aresta em formato de texto, por exemplo: 0->2.
-
-            if (arestas.contains(aresta)) { // Verifica se essa mesma aresta já apareceu antes.
-                System.out.println("Grafo apresenta arestas paralelas, não é simples"); // Se apareceu, existem arestas paralelas.
-                return; // Encerra o método porque o grafo já não é simples.
-            } else { // Se a aresta ainda não apareceu.
-                arestas.add(aresta); // Adiciona a aresta na lista de arestas já encontradas.
-            }
-        }
-
-        System.out.println("Grafo é simples"); // Se terminou sem achar laço ou repetição, o grafo é simples.
-    }
-
-    public void grafoRegularMI() {
-        // Verifica se a matriz de incidência representa um grafo orientado.
+    public boolean grafoSimplesMI() { // Método que verifica se o grafo da matriz de incidência é simples.
         boolean orientado = verificaOrientacaoMI();
+        boolean simples = true;
+        ArrayList<String> arestas = new ArrayList<String>();
+        int quantidadeArestas = matriz[0].length;
 
-        boolean flag = true; // Começa assumindo que o grafo é regular.
-        int grauReferencia = 0; // Guarda o grau do primeiro vértice para comparar com os outros.
+        for (int coluna = 0; coluna < quantidadeArestas && simples; coluna++) {
+            String aresta = "";
 
-        // Calcula o grau do primeiro vértice, que está na primeira linha da matriz.
-        for (int j = 0; j < matriz[0].length; j++) {
             if (orientado) {
-                // Em grafo orientado, -1 e 1 contam como incidência, então usamos valor absoluto.
-                grauReferencia += Math.abs(matriz[0][j]);
-            } else {
-                // Em grafo não orientado, a matriz normalmente possui apenas 0 e 1.
-                grauReferencia += matriz[0][j];
-            }
-        }
+                int origem = -1;
+                int destino = -1;
+                int quantidadeOrigem = 0;
+                int quantidadeDestino = 0;
 
-        // Calcula o grau dos demais vértices e compara com o grau do primeiro.
-        for (int i = 1; i < matriz.length; i++) {
-            int grauAtual = 0; // Guarda o grau do vértice da linha atual.
-
-            for (int j = 0; j < matriz[i].length; j++) {
-                if (orientado) {
-                    // Math.abs evita que o -1 diminua o grau.
-                    grauAtual += Math.abs(matriz[i][j]);
-                } else {
-                    grauAtual += matriz[i][j];
-                }
-            }
-
-            // Se algum vértice tiver grau diferente, o grafo não é regular.
-            if (grauAtual != grauReferencia)
-                flag = false;
-        }
-
-        if(flag)
-            System.out.println("É regular");
-        else
-            System.out.println("Não regular");
-    }
-
-    public void grafoCompletoMI() {
-        boolean flag = true; // Começa assumindo que o grafo é completo.
-
-        // Percorre todos os pares de vértices diferentes.
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = i + 1; j < matriz.length; j++) {
-                boolean verticesConectados = false; // Indica se existe aresta entre i e j.
-
-                // Em matriz de incidência, cada coluna representa uma aresta.
-                for (int coluna = 0; coluna < matriz[i].length; coluna++) {
-                    // Math.abs permite considerar tanto MI orientada (-1 e 1) quanto não orientada (1 e 1).
-                    if (Math.abs(matriz[i][coluna]) != 0 && Math.abs(matriz[j][coluna]) != 0) {
-                        verticesConectados = true;
+                for (int linha = 0; linha < matriz.length; linha++) {
+                    if (matriz[linha][coluna] < 0) {
+                        origem = linha;
+                        quantidadeOrigem++;
+                    } else if (matriz[linha][coluna] > 0) {
+                        destino = linha;
+                        quantidadeDestino++;
                     }
                 }
 
-                // Se algum par de vértices não estiver conectado, o grafo não é completo.
-                if (!verticesConectados)
-                    flag = false;
+                if (quantidadeOrigem != 1 || quantidadeDestino != 1 || origem == destino) {
+                    simples = false;
+                } else {
+                    aresta = origem + "->" + destino;
+                }
+            } else {
+                int primeiroVertice = -1;
+                int segundoVertice = -1;
+                int quantidadeIncidencias = 0;
+
+                for (int linha = 0; linha < matriz.length; linha++) {
+                    if (matriz[linha][coluna] != 0) {
+                        quantidadeIncidencias++;
+
+                        if (primeiroVertice == -1)
+                            primeiroVertice = linha;
+                        else if (segundoVertice == -1)
+                            segundoVertice = linha;
+                    }
+                }
+
+                if (quantidadeIncidencias != 2) {
+                    simples = false;
+                } else {
+                    int menor = Math.min(primeiroVertice, segundoVertice);
+                    int maior = Math.max(primeiroVertice, segundoVertice);
+                    aresta = menor + "-" + maior;
+                }
+            }
+
+            if (arestas.contains(aresta)) {
+                simples = false;
+            } else {
+                arestas.add(aresta);
             }
         }
 
-        if(flag)
-            System.out.println("Grafo completo de K"+rotulo.length);
+        simplesVerificado = true;
+        grafoSimples = simples;
+
+        if (simples)
+            System.out.println("Grafo é simples");
         else
-            System.out.println("Grafo incompleto");
+            System.out.println("Grafo apresenta laço ou arestas paralelas, não é simples");
+
+        return simples;
+    }
+
+    public boolean grafoRegularMI() {
+        boolean orientado = verificaOrientacaoMI();
+        boolean regular = true;
+
+        if (orientado) {
+            int grauSaidaReferencia = 0;
+            int grauEntradaReferencia = 0;
+
+            for (int coluna = 0; coluna < matriz[0].length; coluna++) {
+                if (matriz[0][coluna] < 0)
+                    grauSaidaReferencia++;
+                else if (matriz[0][coluna] > 0)
+                    grauEntradaReferencia++;
+            }
+
+            for (int linha = 1; linha < matriz.length; linha++) {
+                int grauSaidaAtual = 0;
+                int grauEntradaAtual = 0;
+
+                for (int coluna = 0; coluna < matriz[linha].length; coluna++) {
+                    if (matriz[linha][coluna] < 0)
+                        grauSaidaAtual++;
+                    else if (matriz[linha][coluna] > 0)
+                        grauEntradaAtual++;
+                }
+
+                if (grauSaidaAtual != grauSaidaReferencia || grauEntradaAtual != grauEntradaReferencia)
+                    regular = false;
+            }
+        } else {
+            int grauReferencia = 0;
+
+            for (int coluna = 0; coluna < matriz[0].length; coluna++) {
+                if (matriz[0][coluna] != 0) {
+                    int quantidadeIncidencias = 0;
+
+                    for (int linha = 0; linha < matriz.length; linha++) {
+                        if (matriz[linha][coluna] != 0)
+                            quantidadeIncidencias++;
+                    }
+
+                    if (quantidadeIncidencias == 1)
+                        grauReferencia += 2;
+                    else
+                        grauReferencia++;
+                }
+            }
+
+            for (int linha = 1; linha < matriz.length; linha++) {
+                int grauAtual = 0;
+
+                for (int coluna = 0; coluna < matriz[linha].length; coluna++) {
+                    if (matriz[linha][coluna] != 0) {
+                        int quantidadeIncidencias = 0;
+
+                        for (int outraLinha = 0; outraLinha < matriz.length; outraLinha++) {
+                            if (matriz[outraLinha][coluna] != 0)
+                                quantidadeIncidencias++;
+                        }
+
+                        if (quantidadeIncidencias == 1)
+                            grauAtual += 2;
+                        else
+                            grauAtual++;
+                    }
+                }
+
+                if (grauAtual != grauReferencia)
+                    regular = false;
+            }
+        }
+
+        if (regular)
+            System.out.println("É regular");
+        else
+            System.out.println("Não regular");
+
+        return regular;
+    }
+
+    public boolean grafoCompletoMI() {
+        boolean orientado = verificaOrientacaoMI();
+        boolean completo = true;
+
+        if (!simplesVerificado)
+            grafoSimplesMI();
+
+        if (!grafoSimples) {
+            completo = false;
+        } else if (orientado) {
+            for (int origem = 0; origem < matriz.length; origem++) {
+                for (int destino = 0; destino < matriz.length; destino++) {
+                    if (origem != destino) {
+                        int quantidadeLigacoes = 0;
+
+                        for (int coluna = 0; coluna < matriz[0].length; coluna++) {
+                            int origemAresta = -1;
+                            int destinoAresta = -1;
+                            int quantidadeOrigem = 0;
+                            int quantidadeDestino = 0;
+
+                            for (int linha = 0; linha < matriz.length; linha++) {
+                                if (matriz[linha][coluna] < 0) {
+                                    origemAresta = linha;
+                                    quantidadeOrigem++;
+                                } else if (matriz[linha][coluna] > 0) {
+                                    destinoAresta = linha;
+                                    quantidadeDestino++;
+                                }
+                            }
+
+                            if (quantidadeOrigem == 1 && quantidadeDestino == 1
+                                    && origemAresta == origem && destinoAresta == destino) {
+                                quantidadeLigacoes++;
+                            }
+                        }
+
+                        if (quantidadeLigacoes != 1)
+                            completo = false;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = i + 1; j < matriz.length; j++) {
+                    int quantidadeLigacoes = 0;
+
+                    for (int coluna = 0; coluna < matriz[0].length; coluna++) {
+                        int primeiroVertice = -1;
+                        int segundoVertice = -1;
+                        int quantidadeIncidencias = 0;
+
+                        for (int linha = 0; linha < matriz.length; linha++) {
+                            if (matriz[linha][coluna] != 0) {
+                                quantidadeIncidencias++;
+
+                                if (primeiroVertice == -1)
+                                    primeiroVertice = linha;
+                                else if (segundoVertice == -1)
+                                    segundoVertice = linha;
+                            }
+                        }
+
+                        if (quantidadeIncidencias == 2) {
+                            int menor = Math.min(primeiroVertice, segundoVertice);
+                            int maior = Math.max(primeiroVertice, segundoVertice);
+
+                            if (menor == i && maior == j)
+                                quantidadeLigacoes++;
+                        }
+                    }
+
+                    if (quantidadeLigacoes != 1)
+                        completo = false;
+                }
+            }
+        }
+
+        if (completo) {
+            if (orientado)
+                System.out.println("Grafo completo");
+            else
+                System.out.println("Grafo completo de K" + rotulo.length);
+        } else {
+            System.out.println("Grafo não é completo");
+        }
+
+        return completo;
     }
 }
