@@ -169,17 +169,10 @@ public class MatrizI {
         boolean regular = true;
 
         if (orientado) {
-            int grauSaidaReferencia = 0;
-            int grauEntradaReferencia = 0;
+            int grauSaidaReferencia = -1;
+            int grauEntradaReferencia = -1;
 
-            for (int coluna = 0; coluna < matriz[0].length; coluna++) {
-                if (matriz[0][coluna] < 0)
-                    grauSaidaReferencia++;
-                else if (matriz[0][coluna] > 0)
-                    grauEntradaReferencia++;
-            }
-
-            for (int linha = 1; linha < matriz.length; linha++) {
+            for (int linha = 0; linha < matriz.length; linha++) {
                 int grauSaidaAtual = 0;
                 int grauEntradaAtual = 0;
 
@@ -190,29 +183,19 @@ public class MatrizI {
                         grauEntradaAtual++;
                 }
 
-                if (grauSaidaAtual != grauSaidaReferencia || grauEntradaAtual != grauEntradaReferencia)
+                System.out.println(rotulo[linha] + " - Emissão: " + grauSaidaAtual + " | Recepção: " + grauEntradaAtual);
+
+                if (linha == 0) {
+                    grauSaidaReferencia = grauSaidaAtual;
+                    grauEntradaReferencia = grauEntradaAtual;
+                } else if (grauSaidaAtual != grauSaidaReferencia || grauEntradaAtual != grauEntradaReferencia) {
                     regular = false;
-            }
-        } else {
-            int grauReferencia = 0;
-
-            for (int coluna = 0; coluna < matriz[0].length; coluna++) {
-                if (matriz[0][coluna] != 0) {
-                    int quantidadeIncidencias = 0;
-
-                    for (int linha = 0; linha < matriz.length; linha++) {
-                        if (matriz[linha][coluna] != 0)
-                            quantidadeIncidencias++;
-                    }
-
-                    if (quantidadeIncidencias == 1)
-                        grauReferencia += 2;
-                    else
-                        grauReferencia++;
                 }
             }
+        } else {
+            int grauReferencia = -1;
 
-            for (int linha = 1; linha < matriz.length; linha++) {
+            for (int linha = 0; linha < matriz.length; linha++) {
                 int grauAtual = 0;
 
                 for (int coluna = 0; coluna < matriz[linha].length; coluna++) {
@@ -231,8 +214,13 @@ public class MatrizI {
                     }
                 }
 
-                if (grauAtual != grauReferencia)
+                System.out.println(rotulo[linha] + " - Grau: " + grauAtual);
+
+                if (linha == 0) {
+                    grauReferencia = grauAtual;
+                } else if (grauAtual != grauReferencia) {
                     regular = false;
+                }
             }
         }
 
