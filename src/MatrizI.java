@@ -183,6 +183,8 @@ public class MatrizI {
 
         if (orientado) {
             // Pega os graus de entrada e saída do primeiro vértice como referência
+            boolean regularEmissao = true;
+            boolean regularRecepcao = true;
             int grauSaidaReferencia = 0;
             int grauEntradaReferencia = 0;
 
@@ -205,9 +207,23 @@ public class MatrizI {
                         grauEntradaAtual++;
                 }
 
-                if (grauSaidaAtual != grauSaidaReferencia || grauEntradaAtual != grauEntradaReferencia)
-                    regular = false;
+                if (grauSaidaAtual != grauSaidaReferencia)
+                    regularEmissao = false;
+                if (grauEntradaAtual != grauEntradaReferencia)
+                    regularRecepcao = false;
             }
+
+            if (regularEmissao)
+                System.out.println("Grafo é regular de emissão");
+            else
+                System.out.println("Grafo não é regular de emissão");
+
+            if (regularRecepcao)
+                System.out.println("Grafo é regular de recepção");
+            else
+                System.out.println("Grafo não é regular de recepção");
+
+            regular = regularEmissao && regularRecepcao;
         } else {
             // No não orientado basta contar quantas arestas encostam em cada vértice
             int grauReferencia = 0;
@@ -254,10 +270,12 @@ public class MatrizI {
             }
         }
 
-        if (regular)
-            System.out.println("É regular");
-        else
-            System.out.println("Não regular");
+        if (!orientado) {
+            if (regular)
+                System.out.println("É regular");
+            else
+                System.out.println("Não regular");
+        }
 
         return regular;
     }

@@ -8,7 +8,6 @@ public class MatrizA {
     private File arquivo;
 
     public MatrizA(File arquivo) throws Exception {
-        //assim que a classe e criada, ja le o arquivo e faz todas as verificacoes do grafo
         this.arquivo = arquivo;
         lerArquivo(this.arquivo);
         exibirMatriz();
@@ -26,10 +25,10 @@ public class MatrizA {
         //a primeira linha tem os nomes dos vertices, entao separamos e guardamos no vetor
         Scanner leitor = new Scanner(arq);
         String primeiraLinha = leitor.nextLine();
+        //separei o rotulo em uma String separada, seria os vertices
         rotulo = primeiraLinha.trim().split("[/\\s]+");
         int tamanho = rotulo.length;
         matriz = new int[tamanho][tamanho];
-        //cada volta desse for le uma linha da matriz
         for (int i = 0; i < tamanho; i++) {
             String linha = leitor.nextLine();
             //aceita um ou varios espacos entre os numeros
@@ -43,13 +42,12 @@ public class MatrizA {
     }
 
     public void exibirMatriz() {
-        //primeiro mostra os rotulos la em cima, como cabecalho das colunas
+        //exibe o rotulo
         System.out.printf("%6s", "");
         for (int i = 0; i < rotulo.length; i++) {
             System.out.printf("%6s", rotulo[i]);
         }
         System.out.println();
-        //depois mostra o nome de cada vertice e todos os valores da linha dele
         for (int i = 0; i < matriz.length; i++) {
             System.out.printf("%6s", rotulo[i]);
             for (int j = 0; j < matriz[i].length; j++) {
@@ -73,7 +71,7 @@ public class MatrizA {
 
     public boolean ehSimples() {
         boolean simples = true;
-        //a diagonal representa ligacoes do vertice com ele mesmo. Se tiver uma, nao e simples
+        //verifica se tem laço, ma nao tem multigrafo então nao verifico
         for (int i = 0; i < matriz.length; i++) {
             if (matriz[i][i] != 0)
                 simples = false;
@@ -82,7 +80,6 @@ public class MatrizA {
     }
 
     public void grafoSimples() {
-        //so chama a verificacao e mostra o resultado de um jeito mais amigavel
         if (ehSimples())
             System.out.println("Grafo é simples");
         else
@@ -111,7 +108,9 @@ public class MatrizA {
                     flag = false;
             }
         } else {
-            //em grafo orientado precisamos comparar tanto as saidas quanto as entradas
+            //compara os graus de emissão e recepção, por conta de ser orientado
+            boolean regularEmissao = true;
+            boolean regularRecepcao = true;
             int emissaoReferencia = 0;
             int recepcaoReferencia = 0;
             for (int j = 0; j < matriz.length; j++) {
@@ -131,14 +130,30 @@ public class MatrizA {
                         recepcao++;
                 }
                 System.out.println(rotulo[i] + " - Emissão: " + emissao + " | Recepção: " + recepcao);
-                if (emissao != emissaoReferencia || recepcao != recepcaoReferencia)
-                    flag = false;
+                if (emissao != emissaoReferencia)
+                    regularEmissao = false;
+                if (recepcao != recepcaoReferencia)
+                    regularRecepcao = false;
             }
+
+            if (regularEmissao)
+                System.out.println("Grafo é regular de emissão");
+            else
+                System.out.println("Grafo não é regular de emissão");
+
+            if (regularRecepcao)
+                System.out.println("Grafo é regular de recepção");
+            else
+                System.out.println("Grafo não é regular de recepção");
+
+            flag = regularEmissao && regularRecepcao;
         }
-        if (flag)
-            System.out.println("Grafo é regular");
-        else
-            System.out.println("Grafo não é regular");
+        if (!orientado) {
+            if (flag)
+                System.out.println("Grafo é regular");
+            else
+                System.out.println("Grafo não é regular");
+        }
     }
 
     public void grafoCompleto() {
